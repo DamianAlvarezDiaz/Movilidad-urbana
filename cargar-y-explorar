@@ -1,0 +1,27 @@
+import pandas as pd
+#cargar datos
+merged = pd.read_csv("/datasets/df_merged.csv")
+# Cambiar los nombres de las columnas
+merged = merged.rename(columns={
+    'age_group_name': 'age_group',
+    'country_name': 'country'
+})
+merged = merged.drop(columns=['measure_name', 'parameter', 'metric'], errors='ignore')
+merged = merged[['country', 'year_id', 'value','unit','pathogen','age_group']]
+merged = merged.reset_index(drop=True)
+#verificar cambios
+print(merged.head())
+
+# cargar archivos
+traffic = pd.read_csv('/datasets/tomtom_traffic.csv')
+eco = pd.read_csv('/datasets/oecd_city_economy.csv')
+
+# mostrar las primeras 5 filas de traffic
+traffic.head(5)
+
+  Country	City	UpdateTimeUTC	JamsDelay	TrafficIndexLive	JamsLengthInKms	JamsCount	TrafficIndexWeekAgo	UpdateTimeUTCWeekAgo	TravelTimeLivePer10KmsMins	TravelTimeHistoricPer10KmsMins	MinsDelay
+0	ARE	abu-dhabi	2025-01-13 04:01:30.001	650.7	36.0	109.1	162.0	30.0	2025-01-06 04:01:30.000	11.614767	10.265330	1.349437
+1	ARE	abu-dhabi	2025-01-13 03:46:00.000	540.4	30.0	101.4	136.0	27.0	2025-01-06 03:46:30.001	11.003180	10.031544	0.971635
+2	ARE	abu-dhabi	2025-01-13 02:46:30.000	71.8	7.0	18.9	23.0	6.0	2025-01-06 02:46:30.000	8.196278	8.196510	-0.000232
+3	ARE	abu-dhabi	2025-01-13 01:46:30.001	8.2	2.0	4.1	2.0	2.0	2025-01-06 01:46:30.000	7.723808	7.899046	-0.175238
+4	ARE	abu-dhabi	2025-01-13 00:01:30.000	1.1	1.0	0.2	1.0	1.0	2025-01-06 00:01:30.000	8.336363	8.604379	-0.268016
