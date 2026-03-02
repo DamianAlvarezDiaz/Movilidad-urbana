@@ -1,0 +1,13 @@
+import pandas as pd
+#cargar datos
+merged = pd.read_csv("/datasets/df_merged.csv")
+# Cambiar los nombres de las columnas
+merged = merged.rename(columns={
+    'age_group_name': 'age_group',
+    'country_name': 'country'
+})
+merged = merged.drop(columns=['measure_name', 'parameter', 'metric'], errors='ignore')
+merged = merged[['country', 'year_id', 'value','unit','pathogen','age_group']]
+merged = merged.reset_index(drop=True)
+#verificar cambios
+print(merged.head())
