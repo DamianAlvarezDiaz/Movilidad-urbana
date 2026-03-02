@@ -1,0 +1,17 @@
+# Crear boxplot para observar el comportamiento de los minutos de congestion JamsDelay
+
+# crea tu gráfico
+
+# obtener promedio para mostrarlo en título
+sns.boxplot(data=merged,x="jams_delay",showmeans=True)
+mean_value = merged['jams_delay'].mean()
+plt.title(f'Boxplot de JamsDelay (2024)\nPromedio: {mean_value:.2f}')
+plt.show()
+
+# Crear histograma para ver la distribución de la economía (city_gdp_capita)
+
+merged["city_gdp_per_capita"].hist(bins=5,figsize=(10,5))
+plt.title("Distribución del PIB per cápita (2024)")
+plt.xlabel("PIB per cápita (USD)")
+plt.ylabel("Número de ciudades")
+plt.show()
