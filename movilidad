@@ -1,0 +1,39 @@
+# Calcular los  promedios de trafico por ciudad, país y año
+columnas_trafico = ["jams_delay", "traffic_index_live", "jams_length_in_kms","jams_count", "mins_delay", "travel_time_live_per_10_kms_mins","travel_time_historic_per_10_kms_mins"]
+traffic_city_year_2024 = traffic_2024.groupby(["country", "city", "year"])[columnas_trafico].mean().reset_index()
+
+# Mostrar resultado
+traffic_city_year_2024.head()
+
+	country	city	year	jams_delay	traffic_index_live	jams_length_in_kms	jams_count	mins_delay	travel_time_live_per_10_kms_mins	travel_time_historic_per_10_kms_mins
+0	ARE	abu-dhabi	2024	171.157315	13.902028	24.507380	47.268019	0.139764	9.829092	9.689328
+1	ARE	al-ain	2024	43.119862	11.698618	4.533290	12.623489	0.161476	10.630736	10.469260
+2	ARE	dubai	2024	1265.685376	31.214624	189.540172	312.892473	0.848248	12.237314	11.389066
+3	ARE	fujairah	2024	4.025959	10.907719	0.731910	1.373006	0.194951	11.662590	11.467639
+4	ARE	ras-al-khaimah	2024	9.687467	10.761925	1.152082	3.000867	0.154387	10.789596	10.635209
+
+
+# Seleccionar columnas clave de tráfico y economía
+left_cols = ['city','country','year','jams_delay','traffic_index_live',
+             'jams_length_in_kms','jams_count','mins_delay',
+             'travel_time_live_per_10_kms_mins','travel_time_historic_per_10_kms_mins']
+
+right_cols = ['city','year','city_gdp_per_capita','unemployment_percent','pm25_ug_m3','population']
+
+# Usar .copy() para crear los dos nuevos datasets reducidos
+traffic_2024_small = traffic_city_year_2024[left_cols].copy()
+eco_2024_small = eco_2024[right_cols].copy()
+
+# Unir datasets
+merged = pd.merge(traffic_2024_small, eco_2024_small, on=['city', 'year'], how='inner')
+
+# Mostrar las primeras 5 filas
+merged.head(5)
+
+city	country	year	jams_delay	traffic_index_live	jams_length_in_kms	jams_count	mins_delay	travel_time_live_per_10_kms_mins	travel_time_historic_per_10_kms_mins	city_gdp_per_capita	unemployment_percent	pm25_ug_m3	population
+0	buenos-aires	ARG	2024	571.089593	17.756012	100.287844	137.359860	0.416566	17.907916	17.491349	18117.0	7.2	14,50	15400000.0
+1	belo-horizonte	BRA	2024	263.047879	19.428946	44.038129	68.805422	0.487228	18.304538	17.817311	11124.0	9.5	16,80	6100000.0
+2	brasilia	BRA	2024	101.576326	11.258220	18.337133	27.280140	0.193442	13.338658	13.145216	16251.0	7.8	12,80	4800000.0
+3	curitiba	BRA	2024	183.469274	14.954545	30.050044	46.898164	0.139965	17.258700	17.118736	12381.0	8.2	13,50	3700000.0
+4	fortaleza	BRA	2024	82.813181	15.896749	11.205844	24.644991	0.081618	19.267171	19.185554	8512.0	11.8	14,60	4200000.0
+
