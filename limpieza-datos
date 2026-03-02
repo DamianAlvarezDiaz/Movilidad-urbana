@@ -1,0 +1,172 @@
+# Examinar la estructura de traffic
+traffic.info()
+
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 1004464 entries, 0 to 1004463
+Data columns (total 12 columns):
+ #   Column                          Non-Null Count    Dtype  
+---  ------                          --------------    -----  
+ 0   Country                         1004464 non-null  object 
+ 1   City                            1004464 non-null  object 
+ 2   UpdateTimeUTC                   1004464 non-null  object 
+ 3   JamsDelay                       1004464 non-null  float64
+ 4   TrafficIndexLive                1004464 non-null  float64
+ 5   JamsLengthInKms                 1004464 non-null  float64
+ 6   JamsCount                       1004464 non-null  float64
+ 7   TrafficIndexWeekAgo             1004464 non-null  float64
+ 8   UpdateTimeUTCWeekAgo            1004464 non-null  object 
+ 9   TravelTimeLivePer10KmsMins      1004464 non-null  float64
+ 10  TravelTimeHistoricPer10KmsMins  1004464 non-null  float64
+ 11  MinsDelay                       1004464 non-null  float64
+dtypes: float64(8), object(4)
+memory usage: 92.0+ MB
+
+# Examinar la estructura de eco
+eco.info()
+
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 30 entries, 0 to 29
+Data columns (total 7 columns):
+ #   Column           Non-Null Count  Dtype 
+---  ------           --------------  ----- 
+ 0   Year             30 non-null     int64 
+ 1   City             30 non-null     object
+ 2   Country          30 non-null     object
+ 3   City GDP/capita  30 non-null     object
+ 4   Unemployment %   30 non-null     object
+ 5   PM2.5 (μg/m³)    30 non-null     object
+ 6   Population (M)   30 non-null     object
+dtypes: int64(1), object(6)
+memory usage: 1.8+ KB
+
+
+# Estandarizar los nombres de las columnas de traffic
+traffic = traffic.rename(columns={"Country":"country","City":"city","UpdateTimeUTC":"update_time_utc","JamsDelay":"jams_delay","TrafficIndexLive":"traffic_index_live",
+                                  "JamsLengthInKms":"jams_length_in_kms","JamsCount":"jams_count","TrafficIndexWeekAgo":"traffic_index_week_ago","UpdateTimeUTCWeekAgo":"update_time_utc_week_ago",
+                                  "TravelTimeLivePer10KmsMins":"travel_time_live_per_10_kms_mins","TravelTimeHistoricPer10KmsMins":"travel_time_historic_per_10_kms_mins","MinsDelay":"mins_delay"})
+
+# verificar cambios
+traffic.columns
+
+Index(['country', 'city', 'update_time_utc', 'jams_delay',
+       'traffic_index_live', 'jams_length_in_kms', 'jams_count',
+       'traffic_index_week_ago', 'update_time_utc_week_ago',
+       'travel_time_live_per_10_kms_mins',
+       'travel_time_historic_per_10_kms_mins', 'mins_delay'],
+      dtype='object')
+
+# Estandarizar los nombres de las columnas de eco
+eco = eco.rename(columns={"Year":"year", "City":"city","Country":"country","City GDP/capita":"city_gdp_per_capita","Unemployment %":"unemployment_percent","PM2.5 (μg/m³)":"pm25_ug_m3","Population (M)":"population_m"})
+
+# verificar cambios
+eco.columns
+
+Index(['year', 'city', 'country', 'city_gdp_per_capita',
+       'unemployment_percent', 'pm25_ug_m3', 'population_m'],
+      dtype='object')
+
+# Convertir las columnas de traffic a tipo fecha con pd.to_datetime()
+traffic['update_time_utc'] = pd.to_datetime(traffic['update_time_utc'], errors="coerce",utc=True)
+traffic['update_time_utc_week_ago'] = pd.to_datetime(traffic['update_time_utc_week_ago'], errors="coerce",utc=True)
+
+# verificar el cambio
+traffic.info()
+
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 1004464 entries, 0 to 1004463
+Data columns (total 12 columns):
+ #   Column                                Non-Null Count    Dtype              
+---  ------                                --------------    -----              
+ 0   country                               1004464 non-null  object             
+ 1   city                                  1004464 non-null  object             
+ 2   update_time_utc                       1004464 non-null  datetime64[ns, UTC]
+ 3   jams_delay                            1004464 non-null  float64            
+ 4   traffic_index_live                    1004464 non-null  float64            
+ 5   jams_length_in_kms                    1004464 non-null  float64            
+ 6   jams_count                            1004464 non-null  float64            
+ 7   traffic_index_week_ago                1004464 non-null  float64            
+ 8   update_time_utc_week_ago              1004464 non-null  datetime64[ns, UTC]
+ 9   travel_time_live_per_10_kms_mins      1004464 non-null  float64            
+ 10  travel_time_historic_per_10_kms_mins  1004464 non-null  float64            
+ 11  mins_delay                            1004464 non-null  float64            
+dtypes: datetime64[ns, UTC](2), float64(8), object(2)
+memory usage: 92.0+ MB
+
+
+# Limpia separadores y convierte columnas numéricas en eco
+# eco['city_gdp_capita'] = ....astype(str).str.replace('.', '').str.replace(',', '.').astype(float)
+eco["city_gdp_per_capita"] = (eco["city_gdp_per_capita"].astype("string").str.replace('.','').str.replace(',','.').astype(float))
+
+# eco['unemployment_pct'] = ...
+eco["unemployment_percent"] = (eco["unemployment_percent"].astype("string").str.replace('%','').str.replace(',','.').astype(float))
+
+# eco['population_m'] = ...
+eco["population_m"] = (eco["population_m"].astype("string").str.replace(',','.').astype(float))
+
+# Calcula la población total en unidades absolutas (Multiplica * 1000000)
+# eco['population'] = ...
+eco["population"] = eco["population_m"]*1000000
+
+# verificar el cambio
+eco.info()
+eco.head(3)
+
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 1004464 entries, 0 to 1004463
+Data columns (total 12 columns):
+ #   Column                                Non-Null Count    Dtype              
+---  ------                                --------------    -----              
+ 0   country                               1004464 non-null  object             
+ 1   city                                  1004464 non-null  object             
+ 2   update_time_utc                       1004464 non-null  datetime64[ns, UTC]
+ 3   jams_delay                            1004464 non-null  float64            
+ 4   traffic_index_live                    1004464 non-null  float64            
+ 5   jams_length_in_kms                    1004464 non-null  float64            
+ 6   jams_count                            1004464 non-null  float64            
+ 7   traffic_index_week_ago                1004464 non-null  float64            
+ 8   update_time_utc_week_ago              1004464 non-null  datetime64[ns, UTC]
+ 9   travel_time_live_per_10_kms_mins      1004464 non-null  float64            
+ 10  travel_time_historic_per_10_kms_mins  1004464 non-null  float64            
+ 11  mins_delay                            1004464 non-null  float64            
+dtypes: datetime64[ns, UTC](2), float64(8), object(2)
+memory usage: 92.0+ MB
+
+# Limpia separadores y convierte columnas numéricas en eco
+# eco['city_gdp_capita'] = ....astype(str).str.replace('.', '').str.replace(',', '.').astype(float)
+eco["city_gdp_per_capita"] = (eco["city_gdp_per_capita"].astype("string").str.replace('.','').str.replace(',','.').astype(float))
+
+# eco['unemployment_pct'] = ...
+eco["unemployment_percent"] = (eco["unemployment_percent"].astype("string").str.replace('%','').str.replace(',','.').astype(float))
+
+# eco['population_m'] = ...
+eco["population_m"] = (eco["population_m"].astype("string").str.replace(',','.').astype(float))
+
+# Calcula la población total en unidades absolutas (Multiplica * 1000000)
+# eco['population'] = ...
+eco["population"] = eco["population_m"]*1000000
+
+# verificar el cambio
+eco.info()
+eco.head(3)
+
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 30 entries, 0 to 29
+Data columns (total 8 columns):
+ #   Column                Non-Null Count  Dtype  
+---  ------                --------------  -----  
+ 0   year                  30 non-null     int64  
+ 1   city                  30 non-null     object 
+ 2   country               30 non-null     object 
+ 3   city_gdp_per_capita   30 non-null     float64
+ 4   unemployment_percent  30 non-null     float64
+ 5   pm25_ug_m3            30 non-null     object 
+ 6   population_m          30 non-null     float64
+ 7   population            30 non-null     float64
+dtypes: float64(4), int64(1), object(3)
+memory usage: 2.0+ KB
+year	city	country	city_gdp_per_capita	unemployment_percent	pm25_ug_m3	population_m	population
+0	2023	buenos-aires	Argentina	15782.0	6.2	15,2	15.3	15300000.0
+1	2023	sao-paulo	Brazil	14475.0	9.1	29,50	22.5	22500000.0
+2	2023	rio-de-janeiro	Brazil	13142.0	9.8	19,10	13.6	13600000.0
+
+
